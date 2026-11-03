@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المرجع الهندسي والعملي الشامل لـ CSS Flexbox</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #090d16;
+            --bg-card: #111827;
+            --bg-stage: #060911;
+            --border-color: #1f2937;
+            --accent-blue: #38bdf8;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-violet: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        code, pre, .mono {
+            font-family: 'JetBrains Mono', monospace;
+            direction: ltr;
+            unicode-bidi: embed;
+        }
+
+        /* Realistic Blueprint Grid Stage */
+        .blueprint-stage {
+            background-color: #070b14;
+            background-image:
+                linear-gradient(to right, rgba(56, 189, 248, 0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+            background-size: 20px 20px;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Smooth Realistic Item Transitions */
+        .flex-node {
+            transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Control Buttons */
+        .ctrl-btn {
+            transition: all 0.2s ease;
+            border: 1px solid #334155;
+            background-color: #1e293b;
+            color: #cbd5e1;
+        }
+        .ctrl-btn:hover {
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+        .ctrl-btn.active {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+        }
+
+        /* Baseline red guide line */
+        .baseline-guide {
+            position: relative;
+        }
+        .baseline-guide::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0.18em;
+            height: 2px;
+            background-color: rgba(244, 63, 94, 0.9);
+            pointer-events: none;
+        }
+
+        /* Quiz Options - Strictly Identical Styling for All Options */
+        .quiz-choice {
+            transition: all 0.18s ease;
+        }
+        .quiz-choice.user-picked {
+            border-color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.12);
+        }
+    </style>
+</head>
+<body class="selection:bg-sky-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center font-bold text-white mono shadow-lg shadow-sky-500/20">
+                    FX
+                </div>
+                <div>
+                    <div class="font-extrabold text-base sm:text-lg text-white leading-none">مختبر CSS Flexbox الواقعي</div>
+                    <div class="text-[11px] text-sky-400 mt-1">شرح هندسي دقيق بالأبعاد الحقيقية والأنيميشن التفاعلي</div>
+                </div>
+            </div>
+
+            <nav class="hidden lg:flex items-center gap-1 text-xs font-bold text-slate-300">
+                <a href="#axes-lab" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition">1. المحاور واتجاه اللغة</a>
+                <a href="#alignment-lab" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition">2. المحاذاة والمسافات</a>
+                <a href="#wrapping-lab" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition">3. الالتفاف والأسطر</a>
+                <a href="#flex-math-lab" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition">4. معادلات التمدد والانكماش</a>
+                <a href="#real-ui-lab" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition">5. واجهات حقيقية</a>
+                <a href="#sandbox-studio" class="px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition">6. المحاكي الشامل</a>
+                <a href="#quiz-section" class="px-3.5 py-2 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500 hover:text-white transition">7. الاختبار (20 سؤال)</a>
+            </nav>
+
+            <button id="mobileNavToggle" class="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700" aria-label="القائمة">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div id="mobileNavPanel" class="hidden lg:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 space-y-1.5 text-xs font-bold">
+            <a href="#axes-lab" class="block px-3 py-2 rounded hover:bg-slate-800">1. المحاور واتجاه الصفحة (RTL vs LTR)</a>
+            <a href="#alignment-lab" class="block px-3 py-2 rounded hover:bg-slate-800">2. توزيع المساحات ومحاذاة العناصر</a>
+            <a href="#wrapping-lab" class="block px-3 py-2 rounded hover:bg-slate-800">3. التفاف العناصر وتوزيع الأسطر</a>
+            <a href="#flex-math-lab" class="block px-3 py-2 rounded hover:bg-slate-800">4. الحساب الفعلي لـ grow و shrink و basis</a>
+            <a href="#real-ui-lab" class="block px-3 py-2 rounded hover:bg-slate-800">5. تطبيقات واجهات المستخدم الواقعية</a>
+            <a href="#sandbox-studio" class="block px-3 py-2 rounded hover:bg-slate-800">6. استوديو الكود التفاعلي</a>
+            <a href="#quiz-section" class="block px-3 py-2 rounded bg-sky-500/20 text-sky-300">7. اختبار الـ 20 سؤالاً</a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION: Live Real-World Navbar & Card Layout Morphing Animation -->
+    <section class="py-12 lg:py-16 border-b border-slate-800 bg-gradient-to-b from-slate-900/60 to-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-6 space-y-5">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-300 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>محاكاة فيزيائية وحسابية دقيقة بالبكسل (Pixel-Accurate)</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight">
+                        افهم كيف يفكر المتصفح عند تنفيذ <span class="text-sky-400 mono">display: flex</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        بدلاً من الشرح النظري المجرد، يعرض لك هذا الدليل <strong>الأبعاد الحقيقية بالبكسل</strong>، وحسابات المساحة الفارغة الموجبة والسالبة (Free Space &amp; Overflow)، وكيف يتفاعل Flexbox مع اتجاه اللغة العربية (<code class="text-amber-300">RTL</code>) والإنجليزية (<code class="text-amber-300">LTR</code>)، وكيف يتصرف عندما يتغير عرض الشاشة فعلياً.
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-1">
+                        <a href="#axes-lab" class="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm transition shadow-lg shadow-sky-600/25">
+                            ابدأ من الأساس الهندسي
+                        </a>
+                        <a href="#flex-math-lab" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 transition">
+                            مختبر حسابات Grow &amp; Shrink
+                        </a>
+                        <a href="#quiz-section" class="px-5 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-bold text-sm border border-emerald-500/30 transition">
+                            الانتقال لـ 20 سؤالاً
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Live Automated Real-UI Demo -->
+                <div class="lg:col-span-6">
+                    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl p-5 shadow-2xl space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-white">محاكاة حية لواجهة متجاوبة (Live Responsive UI):</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="heroStepBadge" class="mono text-xs bg-sky-500/20 text-sky-300 px-2.5 py-1 rounded border border-sky-500/30">justify-content: space-between</span>
+                                <button id="heroPauseBtn" class="text-xs bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-600 text-slate-200">إيقاف / تشغيل</button>
+                            </div>
+                        </div>
+
+                        <!-- Simulated Browser Viewport that Animates Layouts -->
+                        <div class="blueprint-stage rounded-xl border border-slate-800 p-4 space-y-3" style="direction: ltr;">
+                            <!-- Simulated Navbar inside Viewport -->
+                            <div id="heroNavbar" class="flex-node bg-slate-900/95 border border-slate-700 rounded-lg p-2.5 flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2 bg-sky-600/20 border border-sky-500/40 px-2.5 py-1 rounded text-xs font-bold text-sky-300 mono">
+                                    BrandLogo
+                                </div>
+                                <div class="flex items-center gap-1.5 text-[11px] mono text-slate-300">
+                                    <span class="px-2 py-1 rounded bg-slate-800">Home</span>
+                                    <span class="px-2 py-1 rounded bg-slate-800">Docs</span>
+                                    <span class="px-2 py-1 rounded bg-slate-800">Pricing</span>
+                                </div>
+                                <div class="px-2.5 py-1 rounded bg-emerald-600 text-white text-xs font-bold mono">
+                                    Sign In
+                                </div>
+                            </div>
+
+                            <!-- Simulated Cards Row inside Viewport -->
+                            <div id="heroCardsRow" class="flex-node min-h-[125px] flex gap-3 items-stretch">
+                                <div id="heroCard1" class="flex-node bg-slate-900/90 border border-slate-700 rounded-lg p-3 flex flex-col justify-between" style="flex: 1 1 0%;">
+                                    <div class="text-xs font-bold text-sky-400 mono">Card 1 (flex: 1)</div>
+                                    <div class="text-[11px] text-slate-400 my-1">يتمدد حسب معامل النمو</div>
+                                    <div class="h-1.5 w-full bg-sky-500/30 rounded overflow-hidden"><div class="h-full bg-sky-400 w-2/3"></div></div>
+                                </div>
+                                <div id="heroCard2" class="flex-node bg-slate-900/90 border border-amber-500/50 rounded-lg p-3 flex flex-col justify-between" style="flex: 2 1 0%;">
+                                    <div id="heroCard2Title" class="text-xs font-bold text-amber-400 mono">Card 2 (flex: 2)</div>
+                                    <div class="text-[11px] text-slate-300 my-1">يأخذ ضعف المساحة الإضافية المتاحة</div>
+                                    <div class="h-1.5 w-full bg-amber-500/30 rounded overflow-hidden"><div class="h-full bg-amber-400 w-full"></div></div>
+                                </div>
+                                <div id="heroCard3" class="flex-node bg-slate-900/90 border border-slate-700 rounded-lg p-3 flex flex-col justify-between" style="flex: 1 1 0%;">
+                                    <div class="text-xs font-bold text-emerald-400 mono">Card 3 (flex: 1)</div>
+                                    <div class="text-[11px] text-slate-400 my-1">محاذاة مرنة تلقائية</div>
+                                    <div class="h-1.5 w-full bg-emerald-500/30 rounded overflow-hidden"><div class="h-full bg-emerald-400 w-1/2"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p id="heroCaption" class="text-xs text-slate-400 text-center">
+                            شاهد كيف يتغير توزيع شريط التنقل وأحجام البطاقات تلقائياً بتغيير خصائص Flexbox.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 1: AXES, WRITING DIRECTION (RTL vs LTR), AND DISPLAY MODES    -->
+    <!-- ===================================================================== -->
+    <section id="axes-lab" class="py-16 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30 px-3 py-1 rounded-full">القسم الأول: الأساس الهندسي الدقيق</span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">1. المحاور (Main &amp; Cross Axes) وعلاقتها باتجاه اللغة (RTL vs LTR)</h2>
+                <p class="text-slate-300 text-sm sm:text-base max-w-4xl">
+                    من أكثر الأخطاء الشائعة الاعتقاد بأن <code class="text-sky-400">flex-direction: row</code> يبدأ دائماً من اليسار إلى اليمين! الحقيقة الهندسية في CSS هي أن <code class="text-sky-400">row</code> يتبع <strong>اتجاه الكتابة في الصفحة (<code class="text-amber-300">direction</code>)</strong>: ففي الصفحة العربية (<code class="text-amber-300">RTL</code>) يبدأ <code class="text-sky-400">row</code> من <strong>اليمين إلى اليسار</strong>، وفي الإنجليزية (<code class="text-amber-300">LTR</code>) يبدأ من <strong>اليسار إلى اليمين</strong>.
+                </p>
+            </div>
+
+            <!-- Interactive Lab 1A: flex-direction + dir="rtl" / dir="ltr" -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800">
+                    <div class="space-y-1">
+                        <h3 class="text-lg sm:text-xl font-bold text-white">مختبر المحاور واتجاه الصفحة التفاعلي</h3>
+                        <p class="text-xs text-slate-400">غيّر <code class="text-sky-400">flex-direction</code> وغيّر اتجاه الحاوية <code class="text-amber-300">direction</code> لترى أين تقع نقطة البداية <code class="text-emerald-400">main-start</code> ونقطة النهاية <code class="text-rose-400">main-end</code> فعلياً:</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Writing Direction Toggle -->
+                        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-700 mono text-xs">
+                            <button data-dir-mode="ltr" class="dir-mode-btn ctrl-btn active px-3 py-1.5 rounded-lg font-bold">dir: ltr (إنجليزي)</button>
+                            <button data-dir-mode="rtl" class="dir-mode-btn ctrl-btn px-3 py-1.5 rounded-lg font-bold">dir: rtl (عربي)</button>
+                        </div>
+
+                        <!-- Flex Direction Toggle -->
+                        <div class="flex flex-wrap gap-1.5 mono text-xs" id="flexDirBtnGroup">
+                            <button data-fdir="row" class="ctrl-btn active px-3 py-1.5 rounded-lg font-bold">row</button>
+                            <button data-fdir="row-reverse" class="ctrl-btn px-3 py-1.5 rounded-lg font-bold">row-reverse</button>
+                            <button data-fdir="column" class="ctrl-btn px-3 py-1.5 rounded-lg font-bold">column</button>
+                            <button data-fdir="column-reverse" class="ctrl-btn px-3 py-1.5 rounded-lg font-bold">column-reverse</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-6 items-stretch">
+                    <!-- Stage with Dynamic Axis Pointers -->
+                    <div class="lg:col-span-7 flex flex-col">
+                        <div class="relative blueprint-stage rounded-2xl border-2 border-slate-700 p-6 sm:p-8 min-h-[300px] flex flex-col justify-between">
+                            <!-- Top Dynamic Axis Status Bar -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 border border-slate-700/80 px-3.5 py-2 rounded-xl text-xs z-10">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                                    <span class="font-bold text-sky-300">Main Axis (المحور الرئيسي):</span>
+                                    <span id="mainAxisLiveLabel" class="mono text-white font-bold">أفقي: من اليسار ➡ اليمين</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                                    <span class="font-bold text-rose-300">Cross Axis (المتعامد):</span>
+                                    <span id="crossAxisLiveLabel" class="mono text-white font-bold">عمودي: من الأعلى ⬇ الأسفل</span>
+                                </div>
+                            </div>
+
+                            <!-- Actual Flex Container Being Tested -->
+                            <div id="axisTestContainer" class="my-4 p-4 rounded-xl border border-dashed border-sky-500/40 bg-slate-950/70 min-h-[190px] flex gap-3 items-center justify-start" style="direction: ltr; flex-direction: row;">
+                                <div class="flex-node px-4 py-3 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 text-white font-bold mono text-sm shadow-lg flex items-center gap-2">
+                                    <span class="bg-black/30 px-2 py-0.5 rounded text-xs">1</span>
+                                    <span>العنصر الأول</span>
+                                </div>
+                                <div class="flex-node px-4 py-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-700 text-white font-bold mono text-sm shadow-lg flex items-center gap-2">
+                                    <span class="bg-black/30 px-2 py-0.5 rounded text-xs">2</span>
+                                    <span>العنصر الثاني</span>
+                                </div>
+                                <div class="flex-node px-4 py-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white font-bold mono text-sm shadow-lg flex items-center gap-2">
+                                    <span class="bg-black/30 px-2 py-0.5 rounded text-xs">3</span>
+                                    <span>العنصر الثالث</span>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Dynamic Code Readout -->
+                            <div class="bg-slate-900/90 border border-slate-800 px-3.5 py-2 rounded-xl flex items-center justify-between text-xs mono">
+                                <span id="axisCssReadout" class="text-emerald-400">.container { direction: ltr; display: flex; flex-direction: row; }</span>
+                                <span class="text-slate-400">DOM: 1 → 2 → 3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Engineering Breakdown -->
+                    <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+                            <h4 class="font-bold text-sky-400 text-base">تحليل السلوك الحالي بدقة:</h4>
+                            <p id="axisDetailedAnalysis" class="text-sm text-slate-300 leading-relaxed">
+                                في وضع <strong>LTR</strong> مع <strong>flex-direction: row</strong>: يبدأ المحور الرئيسي (Main-Start) من <strong>اليسار</strong> ويتجه نحو اليمين (Main-End). لذلك يظهر العنصر 1 أقصى اليسار ويتبعه 2 ثم 3.
+                            </p>
+                            <div class="border-t border-slate-800 pt-3 space-y-2 text-xs text-slate-300">
+                                <div class="flex items-start gap-2">
+                                    <span class="text-sky-400 font-bold">1.</span>
+                                    <span><strong>خاصية <code class="text-sky-300">justify-content</code>:</strong> تتحرك دائماً مع أسهم <strong>المحور الرئيسي (Main Axis)</strong>، سواء كان أفقياً أو عمودياً!</span>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-rose-400 font-bold">2.</span>
+                                    <span><strong>خاصية <code class="text-rose-300">align-items</code>:</strong> تتحرك دائماً بشكل عمودي متعامد (90 درجة) على المحور الرئيسي (<strong>Cross Axis</strong>).</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Comparison: display: flex vs display: inline-flex -->
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-amber-400 text-sm">جرب الفرق: <code class="mono">flex</code> مقابل <code class="mono">inline-flex</code></h4>
+                                <div class="flex gap-1 mono text-xs" id="displayTypeToggle">
+                                    <button data-disp="flex" class="ctrl-btn active px-2.5 py-1 rounded">flex</button>
+                                    <button data-disp="inline-flex" class="ctrl-btn px-2.5 py-1 rounded">inline-flex</button>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-400">لاحظ كيف تتصرف حاويتان متجاورتان عند التبديل بين القيمتين:</p>
+                            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs" style="direction: ltr;">
+                                <div id="dispBoxA" class="flex-node bg-sky-950 border border-sky-500/50 p-2 rounded mb-2 gap-1.5 items-center" style="display: flex;">
+                                    <span class="mono text-[11px] text-sky-300 mr-1">Container 1:</span>
+                                    <span class="bg-sky-600 text-white px-2 py-0.5 rounded mono">A</span>
+                                    <span class="bg-sky-600 text-white px-2 py-0.5 rounded mono">B</span>
+                                </div>
+                                <div id="dispBoxB" class="flex-node bg-emerald-950 border border-emerald-500/50 p-2 rounded gap-1.5 items-center" style="display: flex;">
+                                    <span class="mono text-[11px] text-emerald-300 mr-1">Container 2:</span>
+                                    <span class="bg-emerald-600 text-white px-2 py-0.5 rounded mono">C</span>
+                                    <span class="bg-emerald-600 text-white px-2 py-0.5 rounded mono">D</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 2: JUSTIFY-CONTENT (WITH VISUAL SPACE RATIOS) & ALIGN-ITEMS   -->
+    <!-- ===================================================================== -->
+    <section id="alignment-lab" class="py-16 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">القسم الثاني: المحاذاة وتوزيع المساحة الفارغة</span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">2. الفروق الهندسية الدقيقة في <code class="text-sky-400">justify-content</code> و <code class="text-rose-400">align-items</code></h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+
+                <!-- Lab 2A: justify-content with Visual Free-Space Measurement -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-5">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-sky-400 mono">justify-content</h3>
+                            <span class="text-xs bg-sky-500/10 text-sky-300 px-2.5 py-1 rounded border border-sky-500/30">توزيع المساحة الفارغة على المحور الرئيسي</span>
+                        </div>
+                        <p class="text-slate-300 text-xs sm:text-sm">
+                            شاهد كيف تتوزع <strong>المساحة الفارغة</strong> بين العناصر وعند الحواف في كل قيمة، وقارن النسبة الرياضية الدقيقة بالأسفل:
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mono text-xs" id="justifyLabBtns">
+                            <button data-jval="flex-start" class="ctrl-btn px-2.5 py-1.5 rounded-lg">flex-start</button>
+                            <button data-jval="center" class="ctrl-btn px-2.5 py-1.5 rounded-lg">center</button>
+                            <button data-jval="flex-end" class="ctrl-btn px-2.5 py-1.5 rounded-lg">flex-end</button>
+                            <button data-jval="space-between" class="ctrl-btn active px-2.5 py-1.5 rounded-lg">space-between</button>
+                            <button data-jval="space-around" class="ctrl-btn px-2.5 py-1.5 rounded-lg">space-around</button>
+                            <button data-jval="space-evenly" class="ctrl-btn px-2.5 py-1.5 rounded-lg">space-evenly</button>
+                        </div>
+                    </div>
+
+                    <!-- Stage with visual spacing indicators -->
+                    <div class="space-y-2">
+                        <div id="justifyStage" class="blueprint-stage h-36 rounded-xl border-2 border-slate-700 p-3 flex items-center" style="direction: ltr; justify-content: space-between;">
+                            <div class="flex-node w-20 h-16 rounded-xl bg-sky-600 text-white font-bold mono flex flex-col items-center justify-center shadow-lg">
+                                <span>Item 1</span>
+                                <span class="text-[10px] opacity-75">80px</span>
+                            </div>
+                            <div class="flex-node w-20 h-16 rounded-xl bg-indigo-600 text-white font-bold mono flex flex-col items-center justify-center shadow-lg">
+                                <span>Item 2</span>
+                                <span class="text-[10px] opacity-75">80px</span>
+                            </div>
+                            <div class="flex-node w-20 h-16 rounded-xl bg-purple-600 text-white font-bold mono flex flex-col items-center justify-center shadow-lg">
+                                <span>Item 3</span>
+                                <span class="text-[10px] opacity-75">80px</span>
+                            </div>
+                        </div>
+
+                        <!-- Mathematical Ratio Bar -->
+                        <div id="justifyMathBar" class="bg-slate-950 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-200 mono flex flex-wrap items-center justify-between gap-2">
+                            <span>نسبة المسافات (يسار : بين 1و2 : بين 2و3 : يمين)</span>
+                            <span id="justifyRatioText" class="font-bold text-amber-400">0 : 1x : 1x : 0</span>
+                        </div>
+                    </div>
+
+                    <div id="justifyRuleDesc" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                        <strong>space-between:</strong> تضع العنصر الأول ملاصقاً للبداية والعنصر الأخير ملاصقاً للنهاية (مسافة الحواف = 0)، وتقسم المساحة الفارغة المتبقية بالتساوي بين العناصر المتجاورة فقط.
+                    </div>
+                </div>
+
+                <!-- Lab 2B: align-items (Strictly accurate stretch & baseline with guide line) -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-5">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-rose-400 mono">align-items</h3>
+                            <span class="text-xs bg-rose-500/10 text-rose-300 px-2.5 py-1 rounded border border-rose-500/30">المحاذاة على المحور المتعامد (Cross Axis)</span>
+                        </div>
+                        <p class="text-slate-300 text-xs sm:text-sm">
+                            لاحظ كيف يعمل <code class="text-amber-300">stretch</code> (لأن العناصر بدون <code class="text-slate-400">height</code> ثابت!) وكيف يعمل <code class="text-amber-300">baseline</code> (بمحاذاة الخط الأحمر أسفل الحروف):
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mono text-xs" id="alignItemsLabBtns">
+                            <button data-aval="stretch" class="ctrl-btn active px-2.5 py-1.5 rounded-lg">stretch (افتراضي)</button>
+                            <button data-aval="flex-start" class="ctrl-btn px-2.5 py-1.5 rounded-lg">flex-start</button>
+                            <button data-aval="center" class="ctrl-btn px-2.5 py-1.5 rounded-lg">center</button>
+                            <button data-aval="flex-end" class="ctrl-btn px-2.5 py-1.5 rounded-lg">flex-end</button>
+                            <button data-aval="baseline" class="ctrl-btn px-2.5 py-1.5 rounded-lg">baseline</button>
+                        </div>
+                    </div>
+
+                    <!-- Stage where items DO NOT have fixed height, so stretch truly stretches them! -->
+                    <div class="space-y-2">
+                        <div id="alignItemsStage" class="blueprint-stage h-44 rounded-xl border-2 border-slate-700 p-4 flex justify-around gap-3" style="direction: ltr; align-items: stretch;">
+                            <!-- Notice: no fixed height class! Only padding and font size differences -->
+                            <div class="flex-node bg-rose-600/90 border border-rose-400 rounded-xl px-4 py-2 text-white font-bold mono text-xs shadow-lg">
+                                <span class="baseline-guide">Text 12px</span>
+                                <div class="text-[10px] opacity-75 mt-1 font-normal">height: auto</div>
+                            </div>
+                            <div class="flex-node bg-amber-600/90 border border-amber-400 rounded-xl px-4 pt-5 pb-3 text-white font-bold mono text-2xl shadow-lg">
+                                <span class="baseline-guide">Big 24px</span>
+                                <div class="text-[10px] opacity-75 mt-1 font-normal">padding-top: 20px</div>
+                            </div>
+                            <div class="flex-node bg-emerald-600/90 border border-emerald-400 rounded-xl px-4 py-3 text-white font-bold mono text-base shadow-lg">
+                                <span class="baseline-guide">Med 16px</span>
+                                <div class="text-[10px] opacity-75 mt-1 font-normal">height: auto</div>
+                            </div>
+                        </div>
+
+                        <div id="alignItemsMathBar" class="bg-slate-950 border border-rose-500/30 rounded-xl p-3 text-xs text-rose-200 flex flex-wrap items-center justify-between gap-2">
+                            <span>شرط عمل stretch:</span>
+                            <span class="mono font-bold text-rose-400">height: auto (عدم تحديد ارتفاع ثابت للابن)</span>
+                        </div>
+                    </div>
+
+                    <div id="alignItemsRuleDesc" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                        <strong>stretch (القيمة الافتراضية):</strong> تتمدد العناصر تلقائياً لتأخذ كامل ارتفاع الحاوية الأب طالما لم تُعطَ ارتفاعاً صريحاً (<code class="text-amber-300">height</code>). عند اختيار <strong>baseline</strong> تصطف جميع النصوص على الخط الأحمر مهما اختلف حجم الخط أو الحشو العلوي!
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 3: FLEX-WRAP, FLEX-FLOW & ALIGN-CONTENT (WITH RESIZABLE WIDTH)-->
+    <!-- ===================================================================== -->
+    <section id="wrapping-lab" class="py-16 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full">القسم الثالث: تعدد الأسطر والالتفاف الواقعي</span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">3. كيف يعمل <code class="text-amber-400">flex-wrap</code> ومتى تتفعل <code class="text-emerald-400">align-content</code>؟</h2>
+                <p class="text-slate-300 text-sm sm:text-base max-w-4xl">
+                    في الواقع العملي، يظهر دور <code class="text-amber-400">flex-wrap</code> عندما يضيق عرض الحاوية فلا يتسع السطر الواحد لجميع العناصر. استخدم منزلق عرض الحاوية أدناه وجرب الفرق بين <code class="text-amber-300">nowrap</code> و <code class="text-amber-300">wrap</code> و <code class="text-amber-300">wrap-reverse</code>، ثم لاحظ كيف تتحكم <code class="text-emerald-400">align-content</code> في المسافات بين الصفوف الملتفة!
+                </p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6">
+                <!-- Controls Row -->
+                <div class="grid md:grid-cols-3 gap-6 bg-slate-950 p-5 rounded-xl border border-slate-800">
+                    <!-- Wrap Control -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-amber-400 mono">1. flex-wrap (حالة الالتفاف):</label>
+                        <div class="flex flex-wrap gap-1.5 mono text-xs" id="wrapModeBtns">
+                            <button data-wval="nowrap" class="ctrl-btn px-3 py-1.5 rounded-lg">nowrap</button>
+                            <button data-wval="wrap" class="ctrl-btn active px-3 py-1.5 rounded-lg">wrap</button>
+                            <button data-wval="wrap-reverse" class="ctrl-btn px-3 py-1.5 rounded-lg">wrap-reverse</button>
+                        </div>
+                    </div>
+
+                    <!-- Align-Content Control -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-emerald-400 mono">2. align-content (توزيع الأسطر):</label>
+                        <select id="alignContentSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs mono text-white">
+                            <option value="stretch">stretch (تمديد الأسطر - افتراضي)</option>
+                            <option value="flex-start">flex-start (تجميع الأسطر في البداية)</option>
+                            <option value="center" selected>center (توسيط الأسطر معاً)</option>
+                            <option value="flex-end">flex-end (تجميع الأسطر في النهاية)</option>
+                            <option value="space-between">space-between (بين الأسطر فقط)</option>
+                            <option value="space-around">space-around (حول كل سطر)</option>
+                            <option value="space-evenly">space-evenly (مسافات متساوية تماماً)</option>
+                        </select>
+                    </div>
+
+                    <!-- Container Width Slider -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <label class="font-bold text-sky-400">3. عرض الحاوية (Container Width):</label>
+                            <span id="wrapWidthReadout" class="mono font-bold text-white">75%</span>
+                        </div>
+                        <input id="wrapWidthSlider" type="range" min="45" max="100" value="75" class="w-full accent-sky-500">
+                        <div class="text-[11px] text-slate-400">حرك المنزلق لتضييق أو توسيع الحاوية ومشاهدة نزول البطاقات لسطر جديد.</div>
+                    </div>
+                </div>
+
+                <!-- Warning Banner when nowrap is selected -->
+                <div id="nowrapWarningBanner" class="hidden bg-amber-950/60 border border-amber-500/40 rounded-xl p-3 text-xs text-amber-200 flex items-center gap-2">
+                    <span class="text-base">⚠️</span>
+                    <span><strong>ملاحظة هندسية هامة:</strong> أنت الآن في وضع <code class="text-amber-300">flex-wrap: nowrap</code> (سطر واحد فقط)، لذلك فإن خاصية <code class="text-emerald-300">align-content</code> <strong>ليس لها أي تأثير إطلاقاً</strong> لأنها تعمل فقط عند وجود عدة أسطر ملتفة!</span>
+                </div>
+
+                <!-- Live Multi-Line Stage -->
+                <div class="overflow-x-auto py-2">
+                    <div id="wrapStageContainer" class="blueprint-stage h-72 rounded-2xl border-2 border-sky-500/40 p-4 flex gap-3 mx-auto" style="direction: ltr; width: 75%; flex-wrap: wrap; align-content: center;">
+                        <!-- 6 Items with flex-basis: 150px and height: auto so align-content: stretch truly stretches them! -->
+                        <div class="flex-node rounded-xl bg-indigo-600/90 border border-indigo-400 p-3 text-white font-bold mono text-xs flex flex-col justify-center items-center shadow" style="flex: 0 1 150px;">
+                            <span>Item 1</span>
+                            <span class="text-[10px] opacity-80">basis: 150px</span>
+                        </div>
+                        <div class="flex-node rounded-xl bg-sky-600/90 border border-sky-400 p-3 text-white font-bold mono text-xs flex flex-col justify-center items-center shadow" style="flex: 0 1 150px;">
+                            <span>Item 2</span>
+                            <span class="text-[10px] opacity-80">basis: 150px</span>
+                        </div>
+                        <div class="flex-node rounded-xl bg-emerald-600/90 border border-emerald-400 p-3 text-white font-bold mono text-xs flex flex-col justify-center items-center shadow" style="flex: 0 1 150px;">
+                            <span>Item 3</span>
+                            <span class="text-[10px] opacity-80">basis: 150px</span>
+                        </div>
+                        <div class="flex-node rounded-xl bg-amber-600/90 border border-amber-400 p-3 text-white font-bold mono text-xs flex flex-col justify-center items-center shadow" style="flex: 0 1 150px;">
+                            <span>Item 4</span>
+                            <span class="text-[10px] opacity-80">basis: 150px</span>
+                        </div>
+                        <div class="flex-node rounded-xl bg-rose-600/90 border border-rose-400 p-3 text-white font-bold mono text-xs flex flex-col justify-center items-center shadow" style="flex: 0 1 150px;">
+                            <span>Item 5</span>
+                            <span class="text-[10px] opacity-80">basis: 150px</span>
+                        </div>
+                        <div class="flex-node rounded-xl bg-purple-600/90 border border-purple-400 p-3 text-white font-bold mono text-xs flex flex-col justify-center items-center shadow" style="flex: 0 1 150px;">
+                            <span>Item 6</span>
+                            <span class="text-[10px] opacity-80">basis: 150px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 4: THE REAL MATH OF FLEX-GROW, FLEX-SHRINK & FLEX-BASIS       -->
+    <!-- ===================================================================== -->
+    <section id="flex-math-lab" class="py-16 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/30 px-3 py-1 rounded-full">القسم الرابع: الحساب الرياضي الحقيقي لمرونة الأبناء</span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">4. كيف يحسب المتصفح <code class="text-sky-400">flex-grow</code> و <code class="text-rose-400">flex-shrink</code> و <code class="text-emerald-400">flex-basis</code> بالبكسل؟</h2>
+                <p class="text-slate-300 text-sm sm:text-base max-w-4xl">
+                    في CSS، لا تعمل <code class="text-sky-400">flex-grow</code> إلا إذا كانت هناك <strong>مساحة فارغة موجبة</strong> (عرض الحاوية أكبر من مجموع <code class="text-emerald-400">flex-basis</code> للعناصر). وعلى العكس تماماً، لا تعمل <code class="text-rose-400">flex-shrink</code> إلا إذا كان هناك <strong>عجز في المساحة</strong> (مجموع <code class="text-emerald-400">flex-basis</code> أكبر من عرض الحاوية مع <code class="text-amber-300">nowrap</code>)!
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+
+                <!-- LAB 4A: Positive Free Space & flex-grow Calculator -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg sm:text-xl font-bold text-sky-400">أولاً: مختبر التمدد (<code class="mono">flex-grow</code>)</h3>
+                            <span class="text-xs bg-sky-500/10 text-sky-300 px-2.5 py-1 rounded border border-sky-500/30">حالة المساحة الفارغة الموجبة</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            لدينا حاوية عرضها <code class="text-white font-bold">500px</code> بداخلها 3 عناصر حجم كل منها المبدئي (<code class="text-emerald-300">flex-basis: 100px</code>). إذن المجموع = <code class="text-white">300px</code>، وتتبقى <strong>مساحة فارغة موجبة = <code class="text-emerald-400">200px</code></strong>. غيّر قيم <code class="text-sky-300">flex-grow</code> لترى كيف تتوزع الـ <code class="text-emerald-400">200px</code> الإضافية بينها:
+                        </p>
+                    </div>
+
+                    <!-- Sliders for 3 items flex-grow -->
+                    <div class="grid grid-cols-3 gap-3 bg-slate-950 p-3.5 rounded-xl border border-slate-800 mono text-xs">
+                        <div>
+                            <label class="block text-sky-300 mb-1">Item 1 grow: <span id="gVal1" class="font-bold text-white">1</span></label>
+                            <input id="gSlider1" type="range" min="0" max="4" value="1" class="w-full accent-sky-500">
+                        </div>
+                        <div>
+                            <label class="block text-indigo-300 mb-1">Item 2 grow: <span id="gVal2" class="font-bold text-white">2</span></label>
+                            <input id="gSlider2" type="range" min="0" max="4" value="2" class="w-full accent-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-emerald-300 mb-1">Item 3 grow: <span id="gVal3" class="font-bold text-white">1</span></label>
+                            <input id="gSlider3" type="range" min="0" max="4" value="1" class="w-full accent-emerald-500">
+                        </div>
+                    </div>
+
+                    <!-- Visual Grow Stage (Exact Proportional Representation of 500px) -->
+                    <div class="blueprint-stage p-4 rounded-xl border border-slate-700 space-y-3" style="direction: ltr;">
+                        <div class="flex justify-between text-[11px] mono text-slate-400">
+                            <span>Container Total: 500px</span>
+                            <span id="growFreeSpaceLabel" class="text-emerald-400">Free Space Distributed: 200px</span>
+                        </div>
+                        <div class="w-full h-20 bg-slate-950 rounded-xl border border-slate-800 flex overflow-hidden p-1.5 gap-1">
+                            <div id="growBar1" class="flex-node h-full rounded-lg bg-sky-600 text-white font-bold mono text-xs flex flex-col items-center justify-center" style="width: 30%;">
+                                <span>Item 1</span>
+                                <span id="growPx1" class="text-[11px] text-sky-200">150px</span>
+                            </div>
+                            <div id="growBar2" class="flex-node h-full rounded-lg bg-indigo-600 text-white font-bold mono text-xs flex flex-col items-center justify-center" style="width: 40%;">
+                                <span>Item 2</span>
+                                <span id="growPx2" class="text-[11px] text-indigo-200">200px</span>
+                            </div>
+                            <div id="growBar3" class="flex-node h-full rounded-lg bg-emerald-600 text-white font-bold mono text-xs flex flex-col items-center justify-center" style="width: 30%;">
+                                <span>Item 3</span>
+                                <span id="growPx3" class="text-[11px] text-emerald-200">150px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="growFormulaOutput" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 mono leading-relaxed">
+                        Total Grow = 1 + 2 + 1 = 4 حصص | الحصة الواحدة = 200px ÷ 4 = 50px.<br>
+                        Item 2 يأخذ: 100px (basis) + (2 × 50px) = 200px.
+                    </div>
+                </div>
+
+                <!-- LAB 4B: Negative Space (Overflow) & flex-shrink Calculator -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg sm:text-xl font-bold text-rose-400">ثانياً: مختبر الانكماش (<code class="mono">flex-shrink</code>)</h3>
+                            <span class="text-xs bg-rose-500/10 text-rose-300 px-2.5 py-1 rounded border border-rose-500/30">عندما تضيق الحاوية عن العناصر!</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            هنا لدينا 3 عناصر عرض كل منها (<code class="text-emerald-300">flex-basis: 200px</code>)، أي مجموعها المطلوب = <code class="text-white font-bold">600px</code>، بينما عرض الحاوية المتاح هو <code class="text-rose-400 font-bold">450px</code> فقط! أي يوجد <strong>عجز مقداره <code class="text-rose-400">150px</code></strong> يجب اقتطاعه من العناصر حسب قيمة <code class="text-rose-300">flex-shrink</code>:
+                        </p>
+                    </div>
+
+                    <!-- Sliders for 3 items flex-shrink -->
+                    <div class="grid grid-cols-3 gap-3 bg-slate-950 p-3.5 rounded-xl border border-slate-800 mono text-xs">
+                        <div>
+                            <label class="block text-rose-300 mb-1">Item 1 shrink: <span id="sVal1" class="font-bold text-white">0</span></label>
+                            <input id="sSlider1" type="range" min="0" max="4" value="0" class="w-full accent-rose-500">
+                        </div>
+                        <div>
+                            <label class="block text-amber-300 mb-1">Item 2 shrink: <span id="sVal2" class="font-bold text-white">1</span></label>
+                            <input id="sSlider2" type="range" min="0" max="4" value="1" class="w-full accent-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-purple-300 mb-1">Item 3 shrink: <span id="sVal3" class="font-bold text-white">2</span></label>
+                            <input id="sSlider3" type="range" min="0" max="4" value="2" class="w-full accent-purple-500">
+                        </div>
+                    </div>
+
+                    <!-- Visual Shrink Stage -->
+                    <div class="blueprint-stage p-4 rounded-xl border border-slate-700 space-y-3" style="direction: ltr;">
+                        <div class="flex justify-between text-[11px] mono text-slate-400">
+                            <span>Container: 450px (Required: 600px)</span>
+                            <span class="text-rose-400">Deficit to Shrink: -150px</span>
+                        </div>
+                        <div class="w-full h-20 bg-slate-950 rounded-xl border border-slate-800 flex overflow-hidden p-1.5 gap-1">
+                            <div id="shrinkBar1" class="flex-node h-full rounded-lg bg-rose-600 text-white font-bold mono text-xs flex flex-col items-center justify-center" style="width: 44.4%;">
+                                <span>Item 1 (shrink:0)</span>
+                                <span id="shrinkPx1" class="text-[11px] text-rose-200">200px</span>
+                            </div>
+                            <div id="shrinkBar2" class="flex-node h-full rounded-lg bg-amber-600 text-white font-bold mono text-xs flex flex-col items-center justify-center" style="width: 33.3%;">
+                                <span>Item 2</span>
+                                <span id="shrinkPx2" class="text-[11px] text-amber-200">150px</span>
+                            </div>
+                            <div id="shrinkBar3" class="flex-node h-full rounded-lg bg-purple-600 text-white font-bold mono text-xs flex flex-col items-center justify-center" style="width: 22.2%;">
+                                <span>Item 3</span>
+                                <span id="shrinkPx3" class="text-[11px] text-purple-200">100px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="shrinkFormulaOutput" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 mono leading-relaxed">
+                        Item 1 له flex-shrink: 0 لذلك رفض الانكماش واحتفظ بـ 200px كاملة! وتم اقتطاع الـ 150px من العنصرين 2 و 3 بنسبة 1:2.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Deep Technical Comparison: flex: 1 vs flex: auto vs flex-basis vs width -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">الفرق الواقعي الدقيق بين <code class="text-sky-400">flex: 1</code> و <code class="text-amber-400">flex: auto</code></h3>
+                        <p class="text-xs text-slate-400 mt-1">
+                            كثيرون يظنون أن <code class="text-sky-300">flex: 1</code> و <code class="text-amber-300">flex: auto</code> يفعلان نفس الشيء! جرب التبديل بينهما أدناه على عناصر ذات نصوص متفاوتة الطول لترى الفرق الحقيقي:
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mono text-xs" id="flexShorthandCompareBtns">
+                        <button data-fmode="flex1" class="ctrl-btn active px-4 py-2 rounded-xl font-bold">flex: 1 (أي 1 1 0%)</button>
+                        <button data-fmode="flexAuto" class="ctrl-btn px-4 py-2 rounded-xl font-bold">flex: auto (أي 1 1 auto)</button>
+                        <button data-fmode="flexNone" class="ctrl-btn px-4 py-2 rounded-xl font-bold">flex: none (أي 0 0 auto)</button>
+                    </div>
+                </div>
+
+                <div id="shorthandCompareStage" class="blueprint-stage rounded-xl border border-slate-700 p-4 flex gap-3" style="direction: ltr;">
+                    <div class="shorthand-item flex-node bg-sky-600/90 border border-sky-400 rounded-xl p-3 text-white text-xs font-bold mono text-center" style="flex: 1 1 0%;">
+                        <div>Short</div>
+                        <div class="shorthand-sub text-[10px] text-sky-200 mt-1">عريض بالتساوي تماماً</div>
+                    </div>
+                    <div class="shorthand-item flex-node bg-indigo-600/90 border border-indigo-400 rounded-xl p-3 text-white text-xs font-bold mono text-center" style="flex: 1 1 0%;">
+                        <div>Medium Text Content</div>
+                        <div class="shorthand-sub text-[10px] text-indigo-200 mt-1">عريض بالتساوي تماماً</div>
+                    </div>
+                    <div class="shorthand-item flex-node bg-purple-600/90 border border-purple-400 rounded-xl p-3 text-white text-xs font-bold mono text-center" style="flex: 1 1 0%;">
+                        <div>Very Long Content Inside This Third Box</div>
+                        <div class="shorthand-sub text-[10px] text-purple-200 mt-1">عريض بالتساوي تماماً</div>
+                    </div>
+                </div>
+
+                <div id="shorthandCompareExplanation" class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs sm:text-sm text-slate-300">
+                    • عند استخدام <code class="text-sky-400 font-bold">flex: 1</code> (المكافئ لـ <code class="text-amber-300">flex: 1 1 0%</code>): يبدأ المتصفح بحجم أساسي <code class="text-emerald-400">0%</code> لجميع العناصر (يتجاهل طول النص الأصلي)، ثم يقسم عرض الحاوية بالتساوي التام بينها فتصبح العناصر الثلاثة <strong>بنفس العرض تماماً بالبكسل</strong>!<br>
+                    • أما عند استخدام <code class="text-amber-400 font-bold">flex: auto</code> (المكافئ لـ <code class="text-amber-300">flex: 1 1 auto</code>): يعطي المتصفح كل عنصر حجم نصه الأصلي أولاً (<code class="text-emerald-400">auto</code>)، ثم يوزع المساحة الفارغة المتبقية بالتساوي، فيصبح العنصر ذو النص الأطول أعرض من البقية!
+                </div>
+
+                <!-- Priority Rules Note: flex-basis vs width vs min-width/max-width -->
+                <div class="grid md:grid-cols-3 gap-4 pt-2">
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                        <div class="text-xs font-bold text-emerald-400 mono">1. flex-basis مقابل width</div>
+                        <p class="text-xs text-slate-300">إذا اجتمع <code class="text-emerald-300">flex-basis: 200px</code> مع <code class="text-slate-400">width: 100px</code> على نفس العنصر (وكانت القيمة ليست <code class="text-amber-300">auto</code>)، فإن <strong><code class="text-emerald-300">flex-basis</code> يفوز دائماً</strong> ويتجاهل المتصفح خاصية <code class="text-slate-400">width</code>.</p>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                        <div class="text-xs font-bold text-amber-400 mono">2. سلطة min-width و max-width</div>
+                        <p class="text-xs text-slate-300">خواص الحدود القصوى والدنيا (<code class="text-amber-300">min-width</code> / <code class="text-amber-300">max-width</code> في الصفوف) لها <strong>أعلى أولوية مطلقة</strong>؛ فهي تقيد كلّاً من <code class="text-emerald-300">flex-basis</code> و <code class="text-sky-300">flex-grow</code> و <code class="text-rose-300">flex-shrink</code>.</p>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                        <div class="text-xs font-bold text-sky-400 mono">3. مشكلة النص الطويل (min-width: auto)</div>
+                        <p class="text-xs text-slate-300">افتراضياً يكون للعنصر المرن <code class="text-sky-300">min-width: auto</code> مما يمنعه من الانكماش لأقل من عرض أطول كلمة بداخله. الحل العملي الشهير لكسر الكلمات أو تفعيل <code class="text-slate-400">text-overflow: ellipsis</code> هو إعطاء العنصر <code class="text-emerald-400">min-width: 0</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 5: REAL-WORLD UI COMPONENTS LAB (ORDER, ALIGN-SELF, AUTO MARGIN)-->
+    <!-- ===================================================================== -->
+    <section id="real-ui-lab" class="py-16 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-3 py-1 rounded-full">القسم الخامس: تطبيقات واجهات المستخدم الحقيقية</span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">5. تطبيقات واقعية لـ <code class="text-amber-400">order</code> و <code class="text-rose-400">align-self</code> و <code class="text-sky-400">margin: auto</code></h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+
+                <!-- Real UI 1: Navbar Split with margin: auto vs justify-content -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <h3 class="text-lg font-bold text-white">تطبيق 1: فصل عناصر الـ Navbar باستخدام <code class="text-sky-400 mono">margin-left: auto</code></h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            عندما يكون لديك شعار وروابط وزر تسجيل دخول، فإن <code class="text-slate-400">justify-content: space-between</code> يوزع المسافات بين الجميع. أما إذا أردت بقاء الروابط بجانب الشعار ودفع زر الدخول وحده لأقصى الطرف الآخر، نعطي زر الدخول <code class="text-sky-300">margin-left: auto</code> (أو <code class="text-sky-300">margin-inline-start: auto</code>):
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-1 mono text-xs" id="navDemoBtns">
+                            <button data-nav="normal" class="ctrl-btn px-3 py-1.5 rounded-lg">بدون margin: auto</button>
+                            <button data-nav="autoMargin" class="ctrl-btn active px-3 py-1.5 rounded-lg">مع margin-left: auto للزر</button>
+                        </div>
+                    </div>
+
+                    <div class="blueprint-stage p-5 rounded-xl border border-slate-700" style="direction: ltr;">
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+                            <div class="px-3 py-1.5 rounded-lg bg-sky-600 text-white font-bold text-xs mono">Logo</div>
+                            <div class="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs mono">Products</div>
+                            <div class="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs mono">Blog</div>
+                            <div id="navLoginBtn" class="flex-node px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs mono" style="margin-left: auto;">
+                                Login (ml: auto)
+                            </div>
+                        </div>
+                    </div>
+
+                    <pre class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs mono text-slate-300"><code>.navbar { display: flex; align-items: center; gap: 12px; }
+.login-btn { <span class="text-emerald-400 font-bold">margin-left: auto;</span> /* يمتص كل المساحة الفارغة قبله */ }</code></pre>
+                </div>
+
+                <!-- Real UI 2: Chat Bubbles with align-self and order -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <h3 class="text-lg font-bold text-white">تطبيق 2: رسائل المحادثة وترتيب الأولوية بـ <code class="text-rose-400 mono">align-self</code> و <code class="text-amber-400 mono">order</code></h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            في نافذة المحادثة ذات <code class="text-sky-300">flex-direction: column</code>، يمكننا وضع الرسائل المرسلة في جهة والواردة في الجهة المقابلة عبر <code class="text-rose-300">align-self: flex-end</code>، كما يمكن تثبيت رسالة هامة في الأعلى بتغيير قيمتها إلى <code class="text-amber-300">order: -1</code> دون تعديل الـ HTML!
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-1 mono text-xs">
+                            <button id="togglePinMsgBtn" class="ctrl-btn px-3 py-1.5 rounded-lg">تثبيت الرسالة رقم 3 في الأعلى (order: -1)</button>
+                            <button id="toggleAlignMsgBtn" class="ctrl-btn active px-3 py-1.5 rounded-lg">تفعيل align-self: flex-end للرد</button>
+                        </div>
+                    </div>
+
+                    <div class="blueprint-stage p-4 rounded-xl border border-slate-700 flex flex-col gap-2.5" style="direction: ltr;">
+                        <div class="flex-node self-start bg-slate-800 border border-slate-700 text-slate-200 px-3.5 py-2 rounded-xl text-xs max-w-[70%]" style="order: 0;">
+                            <span class="mono text-[10px] text-slate-400 block">Msg #1 (order: 0 | self: flex-start)</span>
+                            مرحباً! كيف نستخدم align-self في Flexbox؟
+                        </div>
+                        <div id="chatReplyBubble" class="flex-node bg-sky-600 text-white px-3.5 py-2 rounded-xl text-xs max-w-[70%]" style="order: 0; align-self: flex-end;">
+                            <span class="mono text-[10px] text-sky-200 block">Msg #2 (order: 0 | align-self: flex-end)</span>
+                            نضع align-self: flex-end على فقاعة الرد فتنتقل للطرف المقابل!
+                        </div>
+                        <div id="chatPinnedBubble" class="flex-node self-start bg-amber-950/90 border border-amber-500/50 text-amber-200 px-3.5 py-2 rounded-xl text-xs max-w-[80%]" style="order: 0;">
+                            <span id="chatPinnedLabel" class="mono text-[10px] text-amber-400 block">Msg #3 (order: 0)</span>
+                            📌 ملاحظة: خاصية order تغير الترتيب البصري فقط ولا تغير ترتيب DOM أو قارئات الشاشة!
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 6: FULL INTERACTIVE STUDIO WITH ITEM INSPECTOR                -->
+    <!-- ===================================================================== -->
+    <section id="sandbox-studio" class="py-16 border-b border-slate-800 bg-slate-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="space-y-1">
+                    <span class="text-xs font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30 px-3 py-1 rounded-full">القسم السادس: الاستوديو الهندسي المتكامل</span>
+                    <h2 class="text-2xl sm:text-4xl font-black text-white">6. محاكي Flexbox الشامل (للأب + لكل عنصر ابن على حدة)</h2>
+                    <p class="text-slate-400 text-sm">اضغط على أي عنصر داخل المسرح لتخصيص <code class="text-sky-400">flex-grow</code> و <code class="text-rose-400">flex-shrink</code> و <code class="text-emerald-400">flex-basis</code> و <code class="text-amber-400">order</code> و <code class="text-purple-400">align-self</code> الخاصة به وحده!</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="studioAddBtn" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">+ إضافة عنصر</button>
+                    <button id="studioRemoveBtn" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition">- حذف عنصر</button>
+                    <button id="studioResetBtn" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition">إعادة ضبط المصنع</button>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-6">
+                <!-- Left Panel: Container & Selected Item Controls -->
+                <div class="lg:col-span-5 space-y-5">
+                    <!-- Container Settings -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                        <h3 class="font-bold text-sm text-sky-400 border-b border-slate-800 pb-2">أولاً: إعدادات الحاوية الأب (Flex Container)</h3>
+                        <div class="grid grid-cols-2 gap-3 text-xs mono">
+                            <div>
+                                <label class="block text-slate-400 mb-1">flex-direction</label>
+                                <select id="stDir" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                                    <option value="row">row</option>
+                                    <option value="row-reverse">row-reverse</option>
+                                    <option value="column">column</option>
+                                    <option value="column-reverse">column-reverse</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">flex-wrap</label>
+                                <select id="stWrap" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                                    <option value="nowrap">nowrap</option>
+                                    <option value="wrap" selected>wrap</option>
+                                    <option value="wrap-reverse">wrap-reverse</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">justify-content</label>
+                                <select id="stJustify" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                                    <option value="flex-start">flex-start</option>
+                                    <option value="center">center</option>
+                                    <option value="flex-end">flex-end</option>
+                                    <option value="space-between" selected>space-between</option>
+                                    <option value="space-around">space-around</option>
+                                    <option value="space-evenly">space-evenly</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">align-items</label>
+                                <select id="stAlignItems" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                                    <option value="stretch">stretch</option>
+                                    <option value="flex-start">flex-start</option>
+                                    <option value="center" selected>center</option>
+                                    <option value="flex-end">flex-end</option>
+                                    <option value="baseline">baseline</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">align-content</label>
+                                <select id="stAlignContent" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                                    <option value="stretch">stretch</option>
+                                    <option value="flex-start">flex-start</option>
+                                    <option value="center">center</option>
+                                    <option value="flex-end">flex-end</option>
+                                    <option value="space-between">space-between</option>
+                                    <option value="space-around">space-around</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">gap: <span id="stGapVal" class="text-sky-400">12px</span></label>
+                                <input id="stGap" type="range" min="0" max="36" value="12" class="w-full accent-sky-500 mt-1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Item Settings -->
+                    <div class="bg-slate-900 border border-amber-500/40 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <h3 class="font-bold text-sm text-amber-400">ثانياً: إعدادات العنصر المحدد (<span id="stSelectedName">Item #1</span>)</h3>
+                            <span class="text-[11px] text-slate-400">انقر على أي صندوق لتحديده</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs mono">
+                            <div>
+                                <label class="block text-slate-400 mb-1">flex-grow: <span id="stItemGrowVal" class="text-white">0</span></label>
+                                <input id="stItemGrow" type="range" min="0" max="5" value="0" class="w-full accent-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">flex-shrink: <span id="stItemShrinkVal" class="text-white">1</span></label>
+                                <input id="stItemShrink" type="range" min="0" max="5" value="1" class="w-full accent-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">order: <span id="stItemOrderVal" class="text-white">0</span></label>
+                                <input id="stItemOrder" type="range" min="-3" max="3" value="0" class="w-full accent-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1">flex-basis</label>
+                                <select id="stItemBasis" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-white">
+                                    <option value="auto">auto</option>
+                                    <option value="90px">90px</option>
+                                    <option value="130px" selected>130px</option>
+                                    <option value="200px">200px</option>
+                                    <option value="50%">50%</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 mb-1">align-self</label>
+                                <select id="stItemAlignSelf" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-white">
+                                    <option value="auto" selected>auto (يتبع الأب)</option>
+                                    <option value="stretch">stretch</option>
+                                    <option value="flex-start">flex-start</option>
+                                    <option value="center">center</option>
+                                    <option value="flex-end">flex-end</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Live Interactive Stage & Code Output -->
+                <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+                    <div id="studioStage" class="blueprint-stage min-h-[320px] rounded-2xl border-2 border-slate-700 p-5 flex flex-wrap justify-between items-center" style="direction: ltr; gap: 12px;">
+                        <!-- Populated dynamically by JS so every item has live state & click handler -->
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-400">كود CSS الحي (للحاوية والعنصر المحدد):</span>
+                            <button id="studioCopyBtn" class="text-xs bg-sky-500/20 hover:bg-sky-500 text-sky-300 hover:text-white px-3 py-1 rounded-lg border border-sky-500/40 transition">نسخ الكود</button>
+                        </div>
+                        <pre id="studioCodeBox" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs mono text-emerald-300 overflow-x-auto"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECTION 7: 20 COMPREHENSIVE MULTIPLE-CHOICE QUESTIONS (UNMARKED)      -->
+    <!-- ===================================================================== -->
+    <section id="quiz-section" class="py-16">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div class="bg-slate-900 border border-sky-500/30 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div class="space-y-2">
+                    <span class="px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold border border-sky-500/30">اختبار التقييم الذاتي</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white">7. اختبار شامل على تفاصيل CSS Flexbox (20 سؤالاً)</h2>
+                    <p class="text-slate-300 text-sm">
+                        جميع الخيارات مصممة بشكل متماثل تماماً في المظهر والكود دون تمييز الإجابة الصحيحة، لتتمكن من حلها واختبار فهمك الدقيق.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:items-end gap-2 shrink-0">
+                    <div class="text-xs text-slate-300 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
+                        الأسئلة المجابة: <span id="quizProgressCount" class="font-bold text-sky-400 mono">0 / 20</span>
+                    </div>
+                    <button id="quizResetAllBtn" class="text-xs px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                        إعادة تعيين الاختيارات
+                    </button>
+                </div>
+            </div>
+
+            <div id="quizContainer" class="space-y-5">
+
+                <!-- Question 1 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">1. عند تطبيق <code class="text-sky-400">display: flex</code> على عنصر أب، ما العناصر التي تصبح <code class="text-amber-300">Flex Items</code> تلقائياً؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q1" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">جميع العناصر الموجودة داخل الأب مهما كانت درجة تداخلها (الأبناء والأحفاد)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q1" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">العناصر الأبناء المباشرة فقط (Direct Children) للعنصر الأب</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q1" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">العناصر التي تحمل الكلاس flex-item فقط</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q1" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">العناصر السطرية (Inline Elements) فقط دون عناصر الكتلة</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">2. في صفحة عربية ذات اتجاه <code class="text-amber-300">dir="rtl"</code>، كيف يكون اتجاه المحور الرئيسي (Main Axis) عندما تكون <code class="text-sky-400">flex-direction: row</code>؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q2" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">أفقياً من اليسار إلى اليمين دائماً</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q2" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">أفقياً من اليمين إلى اليسار تبعاً لاتجاه اللغة</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q2" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">عمودياً من الأعلى إلى الأسفل</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q2" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">عمودياً من الأسفل إلى الأعلى</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">3. ما هي القيم الافتراضية للخصائص الثلاث <code class="text-sky-400">flex-grow</code> و <code class="text-sky-400">flex-shrink</code> و <code class="text-sky-400">flex-basis</code> على الترتيب (والتي يمثلها الاختصار <code class="text-amber-300">flex: initial</code>)؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q3" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">1 1 0%</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q3" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">0 1 auto</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q3" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">0 0 auto</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q3" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">1 0 100%</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">4. لماذا قد لا تتمدد العناصر عمودياً رغم أن القيمة الافتراضية للحاوية هي <code class="text-sky-400">align-items: stretch</code> (في وضع <code class="text-amber-300">row</code>)؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q4" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">لأن العناصر الأبناء تم إعطاؤها ارتفاعاً محدداً (height) بدلاً من height: auto</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q4" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">لأن خاصية stretch لا تعمل إلا إذا كتبنا flex-grow: 1</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q4" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">لأن القيمة الافتراضية لـ align-items هي center وليست stretch</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q4" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">لأن الحاوية لا تحتوي على خاصية gap</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">5. عندما تكون <code class="text-sky-400">flex-direction: column</code>، ما هي الخاصية المسؤولة عن محاذاة العناصر <strong>أفقياً</strong> (يميناً أو يساراً أو في المنتصف الأفقي)؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q5" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">justify-content</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q5" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">align-items</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q5" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">flex-wrap</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q5" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">row-gap</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">6. ما هي النسبة الرياضية للمسافات (عند الطرف الأول : بين العناصر : عند الطرف الأخير) عند استخدام <code class="text-sky-400">justify-content: space-around</code>؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q6" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">0 : 1 : 0</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q6" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">1 : 2 : 1 (المسافة بين عنصرين تساوي ضعف مسافة الطرف)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q6" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">1 : 1 : 1 (جميع المسافات متساوية تماماً)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q6" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">2 : 1 : 2</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">7. متى لا يكون لخاصية <code class="text-sky-400">align-content</code> أي تأثير على الإطلاق؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q7" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">عندما تكون العناصر في سطر واحد فقط (مثل حالة flex-wrap: nowrap)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q7" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">عندما نحدد ارتفاعاً صريحاً للحاوية الأب</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q7" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">عندما نستخدم flex-wrap: wrap مع وجود عدة صفوف</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q7" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">عندما يكون عدد العناصر أكبر من 4 عناصر</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">8. لدينا حاوية عرضها <code class="text-amber-300">600px</code> وبداخلها عنصران: الأول له <code class="text-sky-400">flex: 1 1 100px</code> والثاني له <code class="text-sky-400">flex: 3 1 100px</code>. كم سيكون العرض النهائي للعنصر الثاني بالبكسل؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q8" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">300px</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q8" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">400px</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q8" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">450px</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q8" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">200px</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 9 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">9. ما الفرق الجوهري بين <code class="text-sky-400">flex: 1</code> و <code class="text-sky-400">flex: auto</code>؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q9" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">flex: 1 يضبط flex-basis على 0%، بينما flex: auto يضبط flex-basis على auto</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q9" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">flex: auto يمنع العنصر من الانكماش، بينما flex: 1 يسمح بالانكماش</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q9" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">flex: 1 يُطبق على الأب، بينما flex: auto يُطبق على الأبناء</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q9" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">كلاهما يترجم إلى flex: 1 0 auto بدون أي فرق</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 10 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">10. إذا اجتمع على عنصر ابن في وضع <code class="text-amber-300">flex-direction: row</code> كلٌّ من <code class="text-sky-400">width: 120px</code> و <code class="text-sky-400">flex-basis: 250px</code> و <code class="text-sky-400">max-width: 180px</code>، فما هو العرض المبدئي الفعلي الذي سيلتزم به العنصر؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q10" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">120px (لأن width له الأولوية)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q10" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">250px (لأن flex-basis يتغلب على max-width)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q10" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">180px (لأن flex-basis يتغلب على width ولكن يقيده سقف max-width)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q10" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200 mono">370px (مجموع width و flex-basis)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 11 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">11. ماذا يفعل الاختصار <code class="text-sky-400">flex: none</code> عند تطبيقه على عنصر داخل شريط تنقل؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q11" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">يخفي العنصر تماماً من الصفحة مثل display: none</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q11" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">يضبط العنصر على flex: 0 0 auto فلا يتمدد ولا ينكمش ويحافظ على أبعاده</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q11" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">يلغي خاصية display: flex عن الحاوية الأب</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q11" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">يجعل عرض العنصر 0px</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 12 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">12. لدينا 4 عناصر داخل حاوية Flex، قِيَم <code class="text-sky-400">order</code> لها هي: العنصر الأول (<code class="text-amber-300">2</code>)، العنصر الثاني (<code class="text-amber-300">0</code>)، العنصر الثالث (<code class="text-amber-300">-1</code>)، العنصر الرابع (لم يُحدد له <code class="text-amber-300">order</code>). ما هو ترتيب ظهورها من البداية إلى النهاية؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q12" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">الثالث (-1) ← الثاني (0) ← الرابع (0) ← الأول (2)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q12" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">الأول (2) ← الثاني (0) ← الرابع (0) ← الثالث (-1)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q12" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">الثاني (0) ← الثالث (-1) ← الأول (2) ← الرابع</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q12" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">الرابع ← الثالث (-1) ← الثاني (0) ← الأول (2)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 13 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">13. لماذا لا توجد خاصية اسمها <code class="text-rose-400">justify-self</code> في عناصر Flexbox، وما البديل العملي لتحريك عنصر واحد على المحور الرئيسي؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q13" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">لأن المحور الرئيسي يضم عدة عناصر تتشارك المساحة، والبديل هو استخدام الهوامش التلقائية margin: auto على العنصر</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q13" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">البديل هو استخدام align-self لتحريك العنصر على المحور الرئيسي</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q13" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">البديل هو استخدام float: right داخل حاوية الفليكس</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q13" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">البديل هو استخدام vertical-align: middle</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 14 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">14. ماذا يحدث عند تطبيق <code class="text-sky-400">flex-wrap: wrap-reverse</code> على حاوية أفقيّة (<code class="text-amber-300">row</code>)؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q14" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تنعكس العناصر أفقياً في نفس السطر دون نزولها لسطر جديد</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q14" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">ينعكس المحور المتعامد (Cross Axis) فتبدأ الأسطر من الأسفل وتتجه الأسطر الجديدة نحو الأعلى</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q14" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تتحول الحاوية تلقائياً إلى flex-direction: column</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q14" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">يتوقف التفاف العناصر وتخرج خارج الحاوية</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 15 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">15. ما هو الحل القياسي في CSS عندما يرفض عنصر Flex Item الانكماش بسبب وجود نص طويل بداخله ويرفض تفعيل <code class="text-amber-300">text-overflow: ellipsis</code>؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q15" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إعطاء العنصر الابن min-width: 0 (أو overflow: hidden) لكسر القيمة الافتراضية min-width: auto</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q15" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إعطاء العنصر الابن flex-shrink: 0</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q15" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تغيير align-items إلى baseline</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q15" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إضافة gap: 0px على الحاوية الأب</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 16 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">16. ما الفرق بين <code class="text-sky-400">display: flex</code> و <code class="text-sky-400">display: inline-flex</code>؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q16" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">inline-flex لا يدعم flex-grow ولا flex-shrink</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q16" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">flex يجعل الحاوية نفسها تتصرف كعنصر Block يملأ السطر، بينما inline-flex يجعل الحاوية تتصرف كعنصر Inline على قدر محتواها</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q16" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">inline-flex يرتب العناصر عمودياً بشكل افتراضي</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q16" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">flex يعمل فقط مع عناصر div، بينما inline-flex يعمل فقط مع span</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 17 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">17. كيف تتصرف خاصيتا <code class="text-rose-400">float</code> و <code class="text-rose-400">clear</code> إذا تم تطبيقهما على عنصر ابن مباشر داخل حاوية Flexbox؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q17" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تلغيان عمل Flexbox وتعيدان العنصر إلى التدفق الكلاسيكي</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q17" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">يتم تجاهلهما تماماً وليس لهما أي تأثير على العنصر المرن (Flex Item)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q17" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تحولان العنصر إلى position: absolute</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q17" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تضاعفان قيمة الهامش الخارجي للعنصر</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 18 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">18. ما أثر تغيير خاصية <code class="text-sky-400">order</code> على إمكانية الوصول (Accessibility) وترتيب التنقل بزر <code class="text-amber-300">Tab</code> في لوحة المفاتيح؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q18" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تغير ترتيب الـ DOM وترتيب زر Tab تلقائياً ليطابق الشكل البصري</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q18" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تغير الترتيب البصري فقط، بينما يظل التنقل بزر Tab وقارئات الشاشة يتبعان ترتيب الكود الأصلي في HTML</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q18" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تعطل إمكانية التركيز (Focus) على العنصر المعدل</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q18" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">تحذف العنصر من شجرة Accessibility Tree</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 19 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">19. عند كتابة <code class="text-sky-400">gap: 20px 40px;</code> على حاوية Flex متعددة الأسطر، ماذا تمثل كل قيمة؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q19" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">20px هي المسافة بين الصفوف (row-gap)، و 40px هي المسافة بين الأعمدة (column-gap)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q19" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">20px هي المسافة بين الأعمدة (column-gap)، و 40px هي المسافة بين الصفوف (row-gap)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q19" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">20px للحشو الداخلي للحاوية و 40px للمسافة بين العناصر</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q19" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">خاصية gap لا تقبل قيمتين في Flexbox بل قيمة واحدة فقط</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 20 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-base sm:text-lg text-white">20. في بطاقة منتج مصممة بـ <code class="text-sky-400">display: flex; flex-direction: column;</code>، كيف نضمن بقاء زر "اشترِ الآن" ملتصقاً بأسفل البطاقة دائماً حتى لو كان نص الوصف قصيراً؟</h3>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q20" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إعطاء فقرة الوصف flex-grow: 1 (أو إعطاء الزر margin-top: auto)</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q20" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إعطاء الزر align-self: flex-end</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q20" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إعطاء البطاقة الأب flex-wrap: wrap-reverse</span>
+                        </label>
+                        <label class="quiz-choice flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-600">
+                            <input type="radio" name="q20" class="w-4 h-4 accent-sky-500">
+                            <span class="text-sm text-slate-200">إعطاء الزر flex-shrink: 0</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Feedback -->
+    <div id="appToast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-sky-600 text-white px-4 py-2.5 rounded-xl shadow-2xl font-bold text-xs flex items-center gap-2">
+        <span>✓</span>
+        <span id="appToastMsg">تم النسخ بنجاح</span>
+    </div>
+
+    <footer class="bg-slate-950 border-t border-slate-800 py-8 text-center text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span>المرجع الهندسي والعملي الشامل لـ CSS Flexbox — محاكاة واقعية وتطبيقات حية</span>
+            <a href="#axes-lab" class="text-sky-400 hover:text-sky-300 font-bold">العودة لأعلى الصفحة ↑</a>
+        </div>
+    </footer>
+
+    <script>
+        // Toast Utility
+        function notify(msg) {
+            const t = document.getElementById('appToast');
+            const m = document.getElementById('appToastMsg');
+            m.textContent = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2200);
+        }
+
+        // Mobile Nav
+        const mobileNavToggle = document.getElementById('mobileNavToggle');
+        const mobileNavPanel = document.getElementById('mobileNavPanel');
+        mobileNavToggle.addEventListener('click', () => {
+            mobileNavPanel.classList.toggle('hidden');
+        });
+
+        // Hero Real-UI Animation Loop
+        const heroNavbar = document.getElementById('heroNavbar');
+        const heroCard2 = document.getElementById('heroCard2');
+        const heroCard2Title = document.getElementById('heroCard2Title');
+        const heroStepBadge = document.getElementById('heroStepBadge');
+        const heroPauseBtn = document.getElementById('heroPauseBtn');
+
+        const heroFrames = [
+            { navJustify: 'space-between', c2Flex: '2 1 0%', c2Text: 'Card 2 (flex: 2)', badge: 'justify: space-between | Card2 flex: 2' },
+            { navJustify: 'center', c2Flex: '1 1 0%', c2Text: 'Card 2 (flex: 1)', badge: 'justify: center | Equal Cards (1:1:1)' },
+            { navJustify: 'space-around', c2Flex: '3 1 0%', c2Text: 'Card 2 (flex: 3)', badge: 'justify: space-around | Card2 flex: 3' },
+            { navJustify: 'flex-start', c2Flex: '1 1 0%', c2Text: 'Card 2 (flex: 1)', badge: 'justify: flex-start | Equal Cards' }
+        ];
+        let heroFrameIdx = 0;
+        let heroIsPlaying = true;
+        setInterval(() => {
+            if (!heroIsPlaying) return;
+            heroFrameIdx = (heroFrameIdx + 1) % heroFrames.length;
+            const f = heroFrames[heroFrameIdx];
+            heroNavbar.style.justifyContent = f.navJustify;
+            heroCard2.style.flex = f.c2Flex;
+            heroCard2Title.textContent = f.c2Text;
+            heroStepBadge.textContent = f.badge;
+        }, 2600);
+
+        heroPauseBtn.addEventListener('click', () => {
+            heroIsPlaying = !heroIsPlaying;
+            notify(heroIsPlaying ? 'تم استئناف المحاكاة الحية' : 'تم إيقاف المحاكاة مؤقتاً');
+        });
+
+        // =====================================================================
+        // SECTION 1: AXES & WRITING DIRECTION (RTL vs LTR)
+        // =====================================================================
+        let currentDirMode = 'ltr';
+        let currentFlexDir = 'row';
+        const axisTestContainer = document.getElementById('axisTestContainer');
+        const mainAxisLiveLabel = document.getElementById('mainAxisLiveLabel');
+        const crossAxisLiveLabel = document.getElementById('crossAxisLiveLabel');
+        const axisCssReadout = document.getElementById('axisCssReadout');
+        const axisDetailedAnalysis = document.getElementById('axisDetailedAnalysis');
+
+        function renderAxesLab() {
+            axisTestContainer.style.direction = currentDirMode;
+            axisTestContainer.style.flexDirection = currentFlexDir;
+            axisCssReadout.textContent = `.container { direction: ${currentDirMode}; display: flex; flex-direction: ${currentFlexDir}; }`;
+
+            const isRtl = currentDirMode === 'rtl';
+            if (currentFlexDir === 'row') {
+                mainAxisLiveLabel.textContent = isRtl ? 'أفقي: من اليمين ⬅ اليسار (RTL)' : 'أفقي: من اليسار ➡ اليمين (LTR)';
+                crossAxisLiveLabel.textContent = 'عمودي: من الأعلى ⬇ الأسفل';
+                axisDetailedAnalysis.innerHTML = isRtl
+                    ? 'في وضع <strong>RTL (العربية)</strong> مع <strong>flex-direction: row</strong>: تكون نقطة البداية (Main-Start) في <strong>اليمين</strong> وتتجه نحو اليسار! لذلك يظهر العنصر 1 أقصى اليمين.'
+                    : 'في وضع <strong>LTR (الإنجليزية)</strong> مع <strong>flex-direction: row</strong>: تكون نقطة البداية (Main-Start) في <strong>اليسار</strong> وتتجه نحو اليمين. لذلك يظهر العنصر 1 أقصى اليسار.';
+            } else if (currentFlexDir === 'row-reverse') {
+                mainAxisLiveLabel.textContent = isRtl ? 'أفقي معكوس: من اليسار ➡ اليمين' : 'أفقي معكوس: من اليمين ⬅ اليسار';
+                crossAxisLiveLabel.textContent = 'عمودي: من الأعلى ⬇ الأسفل';
+                axisDetailedAnalysis.innerHTML = isRtl
+                    ? 'في وضع <strong>RTL</strong> مع <strong>row-reverse</strong>: ينعكس الاتجاه العربي الطبيعي فيبدأ العنصر 1 من أقصى <strong>اليسار</strong> متجهاً لليمين.'
+                    : 'في وضع <strong>LTR</strong> مع <strong>row-reverse</strong>: ينعكس الاتجاه الإنجليزي الطبيعي فيبدأ العنصر 1 من أقصى <strong>اليمين</strong> متجهاً لليسار.';
+            } else if (currentFlexDir === 'column') {
+                mainAxisLiveLabel.textContent = 'عمودي: من الأعلى ⬇ الأسفل';
+                crossAxisLiveLabel.textContent = isRtl ? 'أفقي: من اليمين ⬅ اليسار' : 'أفقي: من اليسار ➡ اليمين';
+                axisDetailedAnalysis.innerHTML = 'عند اختيار <strong>column</strong>: يصبح <strong>المحور الرئيسي عمودياً</strong> من الأعلى للأسفل (بغض النظر عن اللغة)، بينما يصبح <strong>المحور المتعامد أفقياً</strong> (يتأثر باتجاه RTL/LTR).';
+            } else if (currentFlexDir === 'column-reverse') {
+                mainAxisLiveLabel.textContent = 'عمودي معكوس: من الأسفل ⬆ الأعلى';
+                crossAxisLiveLabel.textContent = isRtl ? 'أفقي: من اليمين ⬅ اليسار' : 'أفقي: من اليسار ➡ اليمين';
+                axisDetailedAnalysis.innerHTML = 'عند اختيار <strong>column-reverse</strong>: يبدأ المحور الرئيسي من <strong>الأسفل إلى الأعلى</strong>، فيظهر العنصر 1 في القاع والعنصر 3 في الأعلى.';
+            }
+        }
+
+        document.querySelectorAll('.dir-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.dir-mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDirMode = btn.getAttribute('data-dir-mode');
+                renderAxesLab();
+            });
+        });
+
+        document.getElementById('flexDirBtnGroup').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-fdir]');
+            if (!btn) return;
+            document.querySelectorAll('#flexDirBtnGroup button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFlexDir = btn.getAttribute('data-fdir');
+            renderAxesLab();
+        });
+
+        // Display flex vs inline-flex toggle
+        const displayTypeToggle = document.getElementById('displayTypeToggle');
+        const dispBoxA = document.getElementById('dispBoxA');
+        const dispBoxB = document.getElementById('dispBoxB');
+        displayTypeToggle.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-disp]');
+            if (!btn) return;
+            displayTypeToggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const d = btn.getAttribute('data-disp');
+            dispBoxA.style.display = d;
+            dispBoxB.style.display = d;
+        });
+
+        // =====================================================================
+        // SECTION 2: JUSTIFY-CONTENT & ALIGN-ITEMS
+        // =====================================================================
+        const justifyStage = document.getElementById('justifyStage');
+        const justifyRatioText = document.getElementById('justifyRatioText');
+        const justifyRuleDesc = document.getElementById('justifyRuleDesc');
+
+        const justifyMeta = {
+            'flex-start': { ratio: '0 : 0 : 0 : All Free Space', desc: '<strong>flex-start:</strong> تتجمع العناصر في بداية المحور الرئيسي، وتترك كامل المساحة الفارغة في النهاية.' },
+            'center': { ratio: '0.5x : 0 : 0 : 0.5x', desc: '<strong>center:</strong> تتجمع العناصر في منتصف المحور الرئيسي، وتنقسم المساحة الفارغة بالتساوي على الطرفين الأيمن والأيسر.' },
+            'flex-end': { ratio: 'All Free Space : 0 : 0 : 0', desc: '<strong>flex-end:</strong> تنتقل العناصر إلى نهاية المحور الرئيسي، وتترك كامل المساحة الفارغة في البداية.' },
+            'space-between': { ratio: '0 : 1x : 1x : 0', desc: '<strong>space-between:</strong> تضع العنصر الأول ملاصقاً للبداية والأخير ملاصقاً للنهاية (مسافة الأطراف = صفر)، وتوزع المساحة بالتساوي بين العناصر فقط.' },
+            'space-around': { ratio: '0.5x : 1x : 1x : 0.5x', desc: '<strong>space-around:</strong> تعطي كل عنصر هامشاً متساوياً من طرفيه، فتكون المسافة بين أي عنصرين متجاورين (1x) ضعف المسافة عند حافتي الحاوية (0.5x).' },
+            'space-evenly': { ratio: '1x : 1x : 1x : 1x', desc: '<strong>space-evenly:</strong> تقسم المساحة الفارغة بالتساوي المطلق بين العناصر وعند الحافتين اليمنى واليسرى.' }
+        };
+
+        document.getElementById('justifyLabBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-jval]');
+            if (!btn) return;
+            document.querySelectorAll('#justifyLabBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const val = btn.getAttribute('data-jval');
+            justifyStage.style.justifyContent = val;
+            justifyRatioText.textContent = justifyMeta[val].ratio;
+            justifyRuleDesc.innerHTML = justifyMeta[val].desc;
+        });
+
+        const alignItemsStage = document.getElementById('alignItemsStage');
+        const alignItemsRuleDesc = document.getElementById('alignItemsRuleDesc');
+        const alignMeta = {
+            'stretch': '<strong>stretch (الافتراضي):</strong> تتمدد العناصر لتملأ كامل طول المحور المتعامد (ارتفاع السطر) لأن ارتفاعها مضبوط على <code class="text-amber-300">height: auto</code>.',
+            'flex-start': '<strong>flex-start:</strong> تصطف العناصر عند بداية المحور المتعامد (أعلى الحاوية) ويأخذ كل عنصر ارتفاع محتواه فقط.',
+            'center': '<strong>center:</strong> تتوسط العناصر عمودياً في منتصف المحور المتعامد.',
+            'flex-end': '<strong>flex-end:</strong> تصطف العناصر عند نهاية المحور المتعامد (أسفل الحاوية).',
+            'baseline': '<strong>baseline:</strong> تصطف العناصر بحيث تكون قاعدة الحروف (الخط الأحمر أسفل النص) على استقامة أفقية واحدة، حتى لو اختلف حجم الخط أو الـ padding العلوي!'
+        };
+
+        document.getElementById('alignItemsLabBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-aval]');
+            if (!btn) return;
+            document.querySelectorAll('#alignItemsLabBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const val = btn.getAttribute('data-aval');
+            alignItemsStage.style.alignItems = val;
+            alignItemsRuleDesc.innerHTML = alignMeta[val];
+        });
+
+        // =====================================================================
+        // SECTION 3: WRAPPING & ALIGN-CONTENT
+        // =====================================================================
+        const wrapStageContainer = document.getElementById('wrapStageContainer');
+        const alignContentSelect = document.getElementById('alignContentSelect');
+        const wrapWidthSlider = document.getElementById('wrapWidthSlider');
+        const wrapWidthReadout = document.getElementById('wrapWidthReadout');
+        const nowrapWarningBanner = document.getElementById('nowrapWarningBanner');
+
+        document.getElementById('wrapModeBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-wval]');
+            if (!btn) return;
+            document.querySelectorAll('#wrapModeBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const val = btn.getAttribute('data-wval');
+            wrapStageContainer.style.flexWrap = val;
+            if (val === 'nowrap') {
+                nowrapWarningBanner.classList.remove('hidden');
+            } else {
+                nowrapWarningBanner.classList.add('hidden');
+            }
+        });
+
+        alignContentSelect.addEventListener('change', () => {
+            wrapStageContainer.style.alignContent = alignContentSelect.value;
+        });
+
+        wrapWidthSlider.addEventListener('input', () => {
+            const w = wrapWidthSlider.value + '%';
+            wrapWidthReadout.textContent = w;
+            wrapStageContainer.style.width = w;
+        });
+
+        // =====================================================================
+        // SECTION 4: FLEX-GROW & FLEX-SHRINK PIXEL CALCULATORS
+        // =====================================================================
+        const gSlider1 = document.getElementById('gSlider1');
+        const gSlider2 = document.getElementById('gSlider2');
+        const gSlider3 = document.getElementById('gSlider3');
+
+        function updateGrowCalculator() {
+            const g1 = parseInt(gSlider1.value, 10);
+            const g2 = parseInt(gSlider2.value, 10);
+            const g3 = parseInt(gSlider3.value, 10);
+            document.getElementById('gVal1').textContent = g1;
+            document.getElementById('gVal2').textContent = g2;
+            document.getElementById('gVal3').textContent = g3;
+
+            const totalGrow = g1 + g2 + g3;
+            const freeSpace = 200; // 500px container - 3 * 100px basis
+            let w1 = 100, w2 = 100, w3 = 100;
+
+            if (totalGrow > 0) {
+                w1 += Math.round((g1 / totalGrow) * freeSpace);
+                w2 += Math.round((g2 / totalGrow) * freeSpace);
+                w3 = 500 - w1 - w2;
+                document.getElementById('growFreeSpaceLabel').textContent = 'Free Space Distributed: 200px';
+            } else {
+                document.getElementById('growFreeSpaceLabel').textContent = 'Unclaimed Free Space: 200px (grow = 0)';
+            }
+
+            document.getElementById('growBar1').style.width = (w1 / 500 * 100) + '%';
+            document.getElementById('growBar2').style.width = (w2 / 500 * 100) + '%';
+            document.getElementById('growBar3').style.width = (w3 / 500 * 100) + '%';
+
+            document.getElementById('growPx1').textContent = w1 + 'px';
+            document.getElementById('growPx2').textContent = w2 + 'px';
+            document.getElementById('growPx3').textContent = w3 + 'px';
+
+            if (totalGrow === 0) {
+                document.getElementById('growFormulaOutput').innerHTML = 'جميع قيم flex-grow تساوي 0: لم يتمدد أي عنصر وبقي كل عنصر عند عرضه المبدئي 100px وبقيت 200px فارغة.';
+            } else {
+                const share = (freeSpace / totalGrow).toFixed(1);
+                document.getElementById('growFormulaOutput').innerHTML =
+                    `مجموع الحصص = ${g1} + ${g2} + ${g3} = ${totalGrow} | قيمة الحصة الواحدة = 200px ÷ ${totalGrow} = ${share}px.<br>` +
+                    `الأحجام النهائية: Item1 = ${w1}px | Item2 = ${w2}px | Item3 = ${w3}px.`;
+            }
+        }
+
+        [gSlider1, gSlider2, gSlider3].forEach(s => s.addEventListener('input', updateGrowCalculator));
+
+        const sSlider1 = document.getElementById('sSlider1');
+        const sSlider2 = document.getElementById('sSlider2');
+        const sSlider3 = document.getElementById('sSlider3');
+
+        function updateShrinkCalculator() {
+            const s1 = parseInt(sSlider1.value, 10);
+            const s2 = parseInt(sSlider2.value, 10);
+            const s3 = parseInt(sSlider3.value, 10);
+            document.getElementById('sVal1').textContent = s1;
+            document.getElementById('sVal2').textContent = s2;
+            document.getElementById('sVal3').textContent = s3;
+
+            const totalShrink = s1 + s2 + s3;
+            const deficit = 150; // 600px required - 450px container
+            let w1 = 200, w2 = 200, w3 = 200;
+
+            if (totalShrink > 0) {
+                w1 -= Math.round((s1 / totalShrink) * deficit);
+                w2 -= Math.round((s2 / totalShrink) * deficit);
+                w3 = 450 - w1 - w2;
+            }
+
+            document.getElementById('shrinkBar1').style.width = (w1 / 450 * 100) + '%';
+            document.getElementById('shrinkBar2').style.width = (w2 / 450 * 100) + '%';
+            document.getElementById('shrinkBar3').style.width = (w3 / 450 * 100) + '%';
+
+            document.getElementById('shrinkPx1').textContent = w1 + 'px';
+            document.getElementById('shrinkPx2').textContent = w2 + 'px';
+            document.getElementById('shrinkPx3').textContent = w3 + 'px';
+
+            if (totalShrink === 0) {
+                document.getElementById('shrinkFormulaOutput').innerHTML =
+                    '⚠️ عندما يكون flex-shrink: 0 للجميع: ترفض جميع العناصر الانكماش (يبقى كل منها 200px = 600px) وتفيض خارج حدود الحاوية (Overflow)!';
+            } else {
+                document.getElementById('shrinkFormulaOutput').innerHTML =
+                    `مجموع معاملات الانكماش = ${s1} + ${s2} + ${s3} = ${totalShrink} | العجز المقتطع = 150px.<br>` +
+                    `الأحجام بعد الانكماش: Item1 = ${w1}px | Item2 = ${w2}px | Item3 = ${w3}px.`;
+            }
+        }
+
+        [sSlider1, sSlider2, sSlider3].forEach(s => s.addEventListener('input', updateShrinkCalculator));
+
+        // Shorthand Compare (flex: 1 vs flex: auto vs flex: none)
+        document.getElementById('flexShorthandCompareBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-fmode]');
+            if (!btn) return;
+            document.querySelectorAll('#flexShorthandCompareBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.getAttribute('data-fmode');
+            const items = document.querySelectorAll('.shorthand-item');
+            const subs = document.querySelectorAll('.shorthand-sub');
+
+            if (mode === 'flex1') {
+                items.forEach(it => it.style.flex = '1 1 0%');
+                subs.forEach(sb => sb.textContent = 'flex: 1 1 0% (متساوية العرض تماماً)');
+            } else if (mode === 'flexAuto') {
+                items.forEach(it => it.style.flex = '1 1 auto');
+                subs.forEach(sb => sb.textContent = 'flex: 1 1 auto (حجم النص + مساحة إضافية)');
+            } else {
+                items.forEach(it => it.style.flex = '0 0 auto');
+                subs.forEach(sb => sb.textContent = 'flex: 0 0 auto (على قدر النص فقط)');
+            }
+        });
+
+        // =====================================================================
+        // SECTION 5: REAL UI LAB CONTROLS
+        // =====================================================================
+        const navLoginBtn = document.getElementById('navLoginBtn');
+        document.getElementById('navDemoBtns').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-nav]');
+            if (!btn) return;
+            document.querySelectorAll('#navDemoBtns button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.getAttribute('data-nav');
+            if (mode === 'autoMargin') {
+                navLoginBtn.style.marginLeft = 'auto';
+                navLoginBtn.textContent = 'Login (ml: auto)';
+            } else {
+                navLoginBtn.style.marginLeft = '0px';
+                navLoginBtn.textContent = 'Login (ml: 0)';
+            }
+        });
+
+        const togglePinMsgBtn = document.getElementById('togglePinMsgBtn');
+        const chatPinnedBubble = document.getElementById('chatPinnedBubble');
+        const chatPinnedLabel = document.getElementById('chatPinnedLabel');
+        let isPinned = false;
+        togglePinMsgBtn.addEventListener('click', () => {
+            isPinned = !isPinned;
+            togglePinMsgBtn.classList.toggle('active', isPinned);
+            chatPinnedBubble.style.order = isPinned ? '-1' : '0';
+            chatPinnedLabel.textContent = isPinned ? 'Msg #3 (order: -1 | انتقلت للأعلى!)' : 'Msg #3 (order: 0)';
+        });
+
+        const toggleAlignMsgBtn = document.getElementById('toggleAlignMsgBtn');
+        const chatReplyBubble = document.getElementById('chatReplyBubble');
+        let isReplyEnd = true;
+        toggleAlignMsgBtn.addEventListener('click', () => {
+            isReplyEnd = !isReplyEnd;
+            toggleAlignMsgBtn.classList.toggle('active', isReplyEnd);
+            chatReplyBubble.style.alignSelf = isReplyEnd ? 'flex-end' : 'flex-start';
+        });
+
+        // =====================================================================
+        // SECTION 6: FULL INTERACTIVE STUDIO WITH PER-ITEM INSPECTOR
+        // =====================================================================
+        const studioStage = document.getElementById('studioStage');
+        const studioCodeBox = document.getElementById('studioCodeBox');
+        const stDir = document.getElementById('stDir');
+        const stWrap = document.getElementById('stWrap');
+        const stJustify = document.getElementById('stJustify');
+        const stAlignItems = document.getElementById('stAlignItems');
+        const stAlignContent = document.getElementById('stAlignContent');
+        const stGap = document.getElementById('stGap');
+        const stGapVal = document.getElementById('stGapVal');
+
+        const stSelectedName = document.getElementById('stSelectedName');
+        const stItemGrow = document.getElementById('stItemGrow');
+        const stItemGrowVal = document.getElementById('stItemGrowVal');
+        const stItemShrink = document.getElementById('stItemShrink');
+        const stItemShrinkVal = document.getElementById('stItemShrinkVal');
+        const stItemOrder = document.getElementById('stItemOrder');
+        const stItemOrderVal = document.getElementById('stItemOrderVal');
+        const stItemBasis = document.getElementById('stItemBasis');
+        const stItemAlignSelf = document.getElementById('stItemAlignSelf');
+
+        const studioColors = [
+            'from-sky-500 to-blue-700',
+            'from-indigo-500 to-purple-700',
+            'from-emerald-500 to-teal-700',
+            'from-amber-500 to-orange-700',
+            'from-rose-500 to-pink-700',
+            'from-violet-500 to-fuchsia-700'
+        ];
+
+        let studioItemsData = [
+            { id: 1, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' },
+            { id: 2, grow: 1, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' },
+            { id: 3, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' },
+            { id: 4, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' }
+        ];
+        let selectedItemIndex = 0;
+
+        function loadSelectedItemControls() {
+            const item = studioItemsData[selectedItemIndex];
+            if (!item) return;
+            stSelectedName.textContent = `Item #${item.id}`;
+            stItemGrow.value = item.grow;
+            stItemGrowVal.textContent = item.grow;
+            stItemShrink.value = item.shrink;
+            stItemShrinkVal.textContent = item.shrink;
+            stItemOrder.value = item.order;
+            stItemOrderVal.textContent = item.order;
+            stItemBasis.value = item.basis;
+            stItemAlignSelf.value = item.alignSelf;
+        }
+
+        function renderStudio() {
+            studioStage.style.flexDirection = stDir.value;
+            studioStage.style.flexWrap = stWrap.value;
+            studioStage.style.justifyContent = stJustify.value;
+            studioStage.style.alignItems = stAlignItems.value;
+            studioStage.style.alignContent = stAlignContent.value;
+            studioStage.style.gap = stGap.value + 'px';
+            stGapVal.textContent = stGap.value + 'px';
+
+            studioStage.innerHTML = '';
+            studioItemsData.forEach((it, idx) => {
+                const div = document.createElement('div');
+                const grad = studioColors[idx % studioColors.length];
+                const isSelected = idx === selectedItemIndex;
+                div.className = `flex-node cursor-pointer rounded-2xl bg-gradient-to-br ${grad} p-4 text-white mono text-xs flex flex-col justify-center items-center shadow-lg ${isSelected ? 'ring-4 ring-amber-400 scale-[1.02]' : 'opacity-90 hover:opacity-100'}`;
+                div.style.flexGrow = it.grow;
+                div.style.flexShrink = it.shrink;
+                div.style.flexBasis = it.basis;
+                div.style.order = it.order;
+                div.style.alignSelf = it.alignSelf;
+
+                div.innerHTML = `
+                    <div class="font-bold text-sm mb-1">${isSelected ? '★ ' : ''}Item #${it.id}</div>
+                    <div class="text-[10px] bg-black/30 px-2 py-0.5 rounded">flex: ${it.grow} ${it.shrink} ${it.basis}</div>
+                    <div class="text-[10px] opacity-80 mt-0.5">order: ${it.order} | self: ${it.alignSelf}</div>
+                `;
+                div.addEventListener('click', () => {
+                    selectedItemIndex = idx;
+                    loadSelectedItemControls();
+                    renderStudio();
+                });
+                studioStage.appendChild(div);
+            });
+
+            const sel = studioItemsData[selectedItemIndex];
+            studioCodeBox.textContent =
+`.container {
+  display: flex;
+  flex-direction: ${stDir.value};
+  flex-wrap: ${stWrap.value};
+  justify-content: ${stJustify.value};
+  align-items: ${stAlignItems.value};
+  align-content: ${stAlignContent.value};
+  gap: ${stGap.value}px;
+}
+
+.item-${sel.id} {
+  flex: ${sel.grow} ${sel.shrink} ${sel.basis};
+  order: ${sel.order};
+  align-self: ${sel.alignSelf};
+}`;
+        }
+
+        [stDir, stWrap, stJustify, stAlignItems, stAlignContent, stGap].forEach(el => {
+            el.addEventListener('input', renderStudio);
+            el.addEventListener('change', renderStudio);
+        });
+
+        [stItemGrow, stItemShrink, stItemOrder, stItemBasis, stItemAlignSelf].forEach(el => {
+            el.addEventListener('input', () => {
+                const item = studioItemsData[selectedItemIndex];
+                if (!item) return;
+                item.grow = parseInt(stItemGrow.value, 10);
+                item.shrink = parseInt(stItemShrink.value, 10);
+                item.order = parseInt(stItemOrder.value, 10);
+                item.basis = stItemBasis.value;
+                item.alignSelf = stItemAlignSelf.value;
+                loadSelectedItemControls();
+                renderStudio();
+            });
+            el.addEventListener('change', () => {
+                const item = studioItemsData[selectedItemIndex];
+                if (!item) return;
+                item.basis = stItemBasis.value;
+                item.alignSelf = stItemAlignSelf.value;
+                loadSelectedItemControls();
+                renderStudio();
+            });
+        });
+
+        document.getElementById('studioAddBtn').addEventListener('click', () => {
+            if (studioItemsData.length >= 8) {
+                notify('الحد الأقصى 8 عناصر في الاستوديو');
+                return;
+            }
+            const nextId = studioItemsData.length + 1;
+            studioItemsData.push({ id: nextId, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' });
+            selectedItemIndex = studioItemsData.length - 1;
+            loadSelectedItemControls();
+            renderStudio();
+        });
+
+        document.getElementById('studioRemoveBtn').addEventListener('click', () => {
+            if (studioItemsData.length <= 1) {
+                notify('يجب بقاء عنصر واحد على الأقل');
+                return;
+            }
+            studioItemsData.pop();
+            if (selectedItemIndex >= studioItemsData.length) {
+                selectedItemIndex = studioItemsData.length - 1;
+            }
+            loadSelectedItemControls();
+            renderStudio();
+        });
+
+        document.getElementById('studioResetBtn').addEventListener('click', () => {
+            stDir.value = 'row';
+            stWrap.value = 'wrap';
+            stJustify.value = 'space-between';
+            stAlignItems.value = 'center';
+            stAlignContent.value = 'stretch';
+            stGap.value = 12;
+            studioItemsData = [
+                { id: 1, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' },
+                { id: 2, grow: 1, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' },
+                { id: 3, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' },
+                { id: 4, grow: 0, shrink: 1, basis: '130px', order: 0, alignSelf: 'auto' }
+            ];
+            selectedItemIndex = 0;
+            loadSelectedItemControls();
+            renderStudio();
+            notify('تمت إعادة ضبط الاستوديو');
+        });
+
+        document.getElementById('studioCopyBtn').addEventListener('click', () => {
+            const text = studioCodeBox.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => notify('تم نسخ الكود بنجاح!'));
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                notify('تم نسخ الكود بنجاح!');
+            }
+        });
+
+        loadSelectedItemControls();
+        renderStudio();
+
+        // =====================================================================
+        // SECTION 7: QUIZ PROGRESS (NO CORRECT ANSWER HIGHLIGHTING)
+        // =====================================================================
+        const quizContainer = document.getElementById('quizContainer');
+        const quizProgressCount = document.getElementById('quizProgressCount');
+        const quizResetAllBtn = document.getElementById('quizResetAllBtn');
+
+        function refreshQuizUI() {
+            let count = 0;
+            for (let i = 1; i <= 20; i++) {
+                if (quizContainer.querySelector(`input[name="q${i}"]:checked`)) {
+                    count++;
+                }
+            }
+            quizProgressCount.textContent = `${count} / 20`;
+
+            quizContainer.querySelectorAll('.quiz-choice').forEach(lbl => {
+                const inp = lbl.querySelector('input[type="radio"]');
+                lbl.classList.toggle('user-picked', Boolean(inp && inp.checked));
+            });
+        }
+
+        quizContainer.addEventListener('change', refreshQuizUI);
+        quizResetAllBtn.addEventListener('click', () => {
+            quizContainer.querySelectorAll('input[type="radio"]').forEach(inp => inp.checked = false);
+            refreshQuizUI();
+            notify('تم مسح جميع الإجابات المختارة');
+        });
+    </script>
+</body>
+</html>
